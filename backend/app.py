@@ -46,9 +46,35 @@ model = genai.GenerativeModel('gemini-2.0-flash-exp')
 # Conversation history
 conversation_history = []
 
-# FFmpeg path
-FFMPEG_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 
-                           'ffmpeg-8.0-essentials_build', 'bin', 'ffmpeg.exe')
+# FFmpeg path - automatically find FFmpeg folder
+def find_ffmpeg_path():
+    """Find FFmpeg executable in the project directory"""
+    project_root = os.path.dirname(os.path.dirname(__file__))
+    
+    # Look for ffmpeg folders (different versions users might download)
+    possible_folders = [
+        'ffmpeg-8.0-essentials_build',
+        'ffmpeg-7.0-essentials_build', 
+        'ffmpeg-6.1-essentials_build',
+        'ffmpeg-release-essentials',
+        'ffmpeg-essentials'
+    ]
+    
+    for folder in possible_folders:
+        ffmpeg_path = os.path.join(project_root, folder, 'bin', 'ffmpeg.exe')
+        if os.path.exists(ffmpeg_path):
+            return ffmpeg_path
+    
+    # Try to find any folder starting with 'ffmpeg'
+    for item in os.listdir(project_root):
+        if item.startswith('ffmpeg') and os.path.isdir(os.path.join(project_root, item)):
+            ffmpeg_path = os.path.join(project_root, item, 'bin', 'ffmpeg.exe')
+            if os.path.exists(ffmpeg_path):
+                return ffmpeg_path
+    
+    return None
+
+FFMPEG_PATH = find_ffmpeg_path()
 
 @app.route('/api/health', methods=['GET'])
 def health_check():
@@ -357,7 +383,14 @@ if __name__ == '__main__':
         print(f"✓ TTS Mode: ElevenLabs")
     print(f"✓ gTTS Available: {'Yes' if GTTS_AVAILABLE else '❌ No (run: pip install gTTS)'}")
     print(f"✓ Speech Recognition: {'Yes' if SR_AVAILABLE else '❌ No (run: pip install SpeechRecognition)'}")
-    print(f"✓ FFmpeg: {'Found' if os.path.exists(FFMPEG_PATH) else '❌ NOT FOUND'}")
+    
+    if FFMPEG_PATH and os.path.exists(FFMPEG_PATH):
+        print(f"✓ FFmpeg: Found at {os.path.dirname(FFMPEG_PATH)}")
+    else:
+        print("❌ FFmpeg: NOT FOUND")
+        print("   Download from: https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip")
+        print("   Extract to project root folder")
+    
     print("="*50)
     print("Server starting on http://localhost:5000")
     print("="*50 + "\n")

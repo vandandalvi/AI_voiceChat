@@ -1,3 +1,7 @@
+# FFmpeg (too large for git - users should download separately)
+ffmpeg-8.0-essentials_build/
+ffmpeg*/
+
 # Environment variables and API keys
 .env
 *.env

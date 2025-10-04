@@ -1,127 +1,272 @@
-# AI Voice Chat 🎙️# 🎙️ Talkito AI Interview Platform
+# AI Voice Chat 🎙️# AI Voice Chat 🎙️# 🎙️ Talkito AI Interview Platform
 
 
 
-An AI-powered interview assistant that conducts voice-based technical interviews using Google Gemini AI and ElevenLabs text-to-speech.An AI-powered interview platform that conducts realistic technical interviews using voice interaction. Built with React, Flask, ElevenLabs TTS, Gemini AI, and FFmpeg.
+An AI-powered interview assistant that conducts voice-based technical interviews using Google Gemini AI and ElevenLabs text-to-speech.
 
 
 
-## ✨ Features## 🌟 Features
+## ✨ FeaturesAn AI-powered interview assistant that conducts voice-based technical interviews using Google Gemini AI and ElevenLabs text-to-speech.An AI-powered interview platform that conducts realistic technical interviews using voice interaction. Built with React, Flask, ElevenLabs TTS, Gemini AI, and FFmpeg.
 
 
 
-- 🎤 **Voice-to-Voice Interaction** - Speak naturally and get AI responses- **Voice-Based Interview**: Natural conversation with AI interviewer
+- 🎤 **Voice-to-Voice Interaction** - Speak naturally and get AI responses
 
-- 🤖 **AI-Powered** - Uses Google Gemini 2.0 Flash for intelligent responses  - **Real-time Speech Processing**: Uses FFmpeg for audio processing
+- 🤖 **AI-Powered** - Uses Google Gemini 2.0 Flash for intelligent responses  
 
-- 🗣️ **Natural Speech** - ElevenLabs API for human-like voice synthesis- **AI-Powered Responses**: Gemini 2.0 Flash for intelligent conversation
+- 🗣️ **Natural Speech** - ElevenLabs API for human-like voice synthesis## ✨ Features## 🌟 Features
 
-- 🎯 **Technical Interviews** - Designed for web development interviews- **Natural Voice**: ElevenLabs text-to-speech for human-like voice
+- 🎯 **Technical Interviews** - Designed for web development interviews
 
-- 🔄 **Conversation Flow** - Maintains context throughout the interview- **Interactive UI**: Clean, modern React interface
-
-- **Conversation History**: Track the entire interview dialogue
-
-## 🚀 Quick Setup
-
-## 🏗️ Architecture
-
-### 1. Clone Repository
-
-```bash```
-
-git clone https://github.com/vandandalvi/AI_voiceChat.gitUser speaks → FFmpeg Audio Processing → Speech-to-Text → Gemini AI → ElevenLabs TTS → AI speaks
-
-cd AI_voiceChat```
-
-```
-
-## 📋 Prerequisites
-
-### 2. Backend Setup
-
-```bash- Python 3.8+
-
-cd backend- Node.js 16+
-
-pip install -r requirements.txt- FFmpeg (included in project)
-
-```- Gemini API Key
-
-- ElevenLabs API Key
-
-### 3. Configure API Keys
-
-```bash## 🚀 Setup Instructions
-
-# Copy example file
-
-copy .env.example .env### Backend Setup
+- 🔄 **Conversation Flow** - Maintains context throughout the interview
 
 
 
-# Edit .env and add your API keys:1. Navigate to backend directory:
+## 🚀 Quick Setup- 🎤 **Voice-to-Voice Interaction** - Speak naturally and get AI responses- **Voice-Based Interview**: Natural conversation with AI interviewer
 
-GEMINI_API_KEY=your_gemini_api_key_here```powershell
 
-ELEVENLABS_API_KEY=your_elevenlabs_api_key_herecd backend
 
-ELEVENLABS_VOICE_ID=nPczCjzI2devNBz1zQrb```
+### 1. Clone Repository- 🤖 **AI-Powered** - Uses Google Gemini 2.0 Flash for intelligent responses  - **Real-time Speech Processing**: Uses FFmpeg for audio processing
 
-```
+```bash
 
-2. Create a virtual environment:
+git clone https://github.com/vandandalvi/AI_voiceChat.git- 🗣️ **Natural Speech** - ElevenLabs API for human-like voice synthesis- **AI-Powered Responses**: Gemini 2.0 Flash for intelligent conversation
 
-### 4. Get API Keys```powershell
+cd AI_voiceChat
 
-python -m venv venv
+```- 🎯 **Technical Interviews** - Designed for web development interviews- **Natural Voice**: ElevenLabs text-to-speech for human-like voice
+
+
+
+### 2. Download FFmpeg (Required)- 🔄 **Conversation Flow** - Maintains context throughout the interview- **Interactive UI**: Clean, modern React interface
+
+```bash
+
+# Windows: Download FFmpeg essentials build- **Conversation History**: Track the entire interview dialogue
+
+# 📥 Direct download: https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip
+
+# 📁 Extract to project root folder (should create ffmpeg-xxx-essentials_build folder)## 🚀 Quick Setup
+
+
+
+# Alternative: Go to https://www.gyan.dev/ffmpeg/builds/## 🏗️ Architecture
+
+# Choose "essentials" build (NOT full build - smaller download)
+
+```### 1. Clone Repository
+
+
+
+### 3. Backend Setup```bash```
+
+```bash
+
+cd backendgit clone https://github.com/vandandalvi/AI_voiceChat.gitUser speaks → FFmpeg Audio Processing → Speech-to-Text → Gemini AI → ElevenLabs TTS → AI speaks
+
+pip install -r requirements.txt
+
+```cd AI_voiceChat```
+
+
+
+### 4. Configure API Keys```
+
+```bash
+
+# Copy example file## 📋 Prerequisites
+
+copy .env.example .env
+
+### 2. Download FFmpeg
+
+# Edit .env and add your API keys:```bash
+
+GEMINI_API_KEY=your_gemini_api_key_here# Windows: Download FFmpeg essentials
+
+ELEVENLABS_API_KEY=your_elevenlabs_api_key_here# Go to: https://www.gyan.dev/ffmpeg/builds/
+
+ELEVENLABS_VOICE_ID=nPczCjzI2devNBz1zQrb# Download: "essentials" build (NOT full build)
+
+```# Extract to project root folder
+
+
+
+### 5. Get API Keys# Or use direct link:
+
+# https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip
 
 **Gemini API (Required):**```
 
 1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
 
-2. Create API key and add to `.env`3. Activate virtual environment:
+2. Create API key and add to `.env`### 3. Backend Setup
 
-```powershell
 
-**ElevenLabs API (Required):**.\venv\Scripts\Activate.ps1
 
-1. Sign up at [ElevenLabs](https://elevenlabs.io/)```
+**ElevenLabs API (Required):**```bash- Python 3.8+
 
-2. Get API key from Profile → API Keys
+1. Sign up at [ElevenLabs](https://elevenlabs.io/)
 
-3. Browse [Voice Library](https://elevenlabs.io/voice-library) for Voice IDs4. Install dependencies:
+2. Get API key from Profile → API Keyscd backend- Node.js 16+
 
-```powershell
+3. Browse [Voice Library](https://elevenlabs.io/voice-library) for Voice IDs
 
-### 5. Run Backendpip install -r requirements.txt
+pip install -r requirements.txt- FFmpeg (included in project)
 
-```bash```
+### 6. Run Backend
+
+```bash```- Gemini API Key
 
 python app.py
 
-```5. Create `.env` file from `.env.example`:
+```- ElevenLabs API Key
 
-Backend runs on `http://localhost:5000````powershell
+Backend runs on `http://localhost:5000`
 
-cp .env.example .env
+### 3. Configure API Keys
 
-### 6. Frontend Setup```
+### 7. Frontend Setup
 
-```bash
+```bash```bash## 🚀 Setup Instructions
 
-cd frontend/vite-project6. Edit `.env` and add your API keys:
+cd frontend/vite-project
 
-npm install```
+npm install# Copy example file
 
-npm run devGEMINI_API_KEY=your_gemini_api_key_here
+npm run dev
 
-```ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
+```copy .env.example .env### Backend Setup
 
-Frontend runs on `http://localhost:5173`ELEVENLABS_VOICE_ID=EXAVITQu4vr4xnSDxMaL
+Frontend runs on `http://localhost:5173`
+
+
+
+## 🎯 Usage
+
+# Edit .env and add your API keys:1. Navigate to backend directory:
+
+1. Open `http://localhost:5173`
+
+2. Click **"Start Interview"** GEMINI_API_KEY=your_gemini_api_key_here```powershell
+
+3. Wait for AI greeting
+
+4. Click **"Start Speaking"** to respondELEVENLABS_API_KEY=your_elevenlabs_api_key_herecd backend
+
+5. Click **"Stop Speaking"** when done
+
+6. Continue the conversation!ELEVENLABS_VOICE_ID=nPczCjzI2devNBz1zQrb```
+
+
+
+## 🛠️ Tech Stack```
+
+
+
+- **Backend:** Flask, Python 3.132. Create a virtual environment:
+
+- **Frontend:** React 19, Vite
+
+- **AI:** Google Gemini 2.0 Flash### 4. Get API Keys```powershell
+
+- **TTS:** ElevenLabs Flash v2.5 
+
+- **STT:** Google Speech Recognitionpython -m venv venv
+
+- **Audio:** FFmpeg (download required)
+
+**Gemini API (Required):**```
+
+## ⚙️ Configuration
+
+1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
+
+### Voice Settings (in `app.py`)
+
+```python2. Create API key and add to `.env`3. Activate virtual environment:
+
+"voice_settings": {
+
+    "stability": 0.3,        # Lower = more expressive  ```powershell
+
+    "similarity_boost": 0.8, # Higher = closer to voice
+
+    "style": 0.3,            # Style exaggeration**ElevenLabs API (Required):**.\venv\Scripts\Activate.ps1
+
+    "use_speaker_boost": True # Enhanced clarity
+
+}1. Sign up at [ElevenLabs](https://elevenlabs.io/)```
 
 ```
 
+2. Get API key from Profile → API Keys
+
+### ElevenLabs Models (in `.env`)
+
+- `eleven_flash_v2_5` - Fastest, lowest cost ✅3. Browse [Voice Library](https://elevenlabs.io/voice-library) for Voice IDs4. Install dependencies:
+
+- `eleven_turbo_v2_5` - High quality, fast
+
+- `eleven_multilingual_v2` - 44 languages```powershell
+
+
+
+## 🔧 Troubleshooting### 5. Run Backendpip install -r requirements.txt
+
+
+
+**FFmpeg Not Found:** Download from link above and extract to project root```bash```
+
+**ElevenLabs 401 Error:** Set `USE_GTTS_FALLBACK=true` in `.env`
+
+**No Microphone:** Grant browser permissionspython app.py
+
+**CORS Errors:** Ensure Flask-CORS is installed
+
+```5. Create `.env` file from `.env.example`:
+
+## 📁 Project Structure
+
+Backend runs on `http://localhost:5000````powershell
+
+```
+
+AI_voiceChat/cp .env.example .env
+
+├── backend/
+
+│   ├── app.py              # Main Flask server### 6. Frontend Setup```
+
+│   ├── requirements.txt    # Dependencies
+
+│   ├── .env.example        # API keys template```bash
+
+│   └── .env                # Your API keys (git ignored)
+
+├── frontend/vite-project/  # React frontendcd frontend/vite-project6. Edit `.env` and add your API keys:
+
+├── ffmpeg-xxx-essentials_build/  # Download separately!
+
+└── README.mdnpm install```
+
+```
+
+npm run devGEMINI_API_KEY=your_gemini_api_key_here
+
+## 📜 License
+
+```ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
+
+MIT License - Free to use and modify!
+
+Frontend runs on `http://localhost:5173`ELEVENLABS_VOICE_ID=EXAVITQu4vr4xnSDxMaL
+
+---
+
+```
+
+**Built with ❤️ using Flask, React, Gemini AI & ElevenLabs**
 ## 🎯 Usage
 
 7. Run the Flask server:
