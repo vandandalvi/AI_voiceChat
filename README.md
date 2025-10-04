@@ -84,8 +84,7 @@ python -m venv venv
 
 ```powershell
 
-**ElevenLabs API (Required):**.\venv\Scripts\Activate.ps1
-
+**ElevenLabs API (Required):**.
 1. Sign up at [ElevenLabs](https://elevenlabs.io/)```
 
 2. Get API key from Profile → API Keys
