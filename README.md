@@ -1,6 +1,6 @@
 # AI Voice Chat 🎙️
 
-# AI Voice Chat 🎙️# AI Voice Chat 🎙️# 🎙️ Talkito AI Interview Platform
+# AI Voice Chat 🎙️# AI Voice Chat 🎙️ # 🎙️ Talkito AI Interview Platform
 
 An AI-powered interview assistant that conducts voice-based technical interviews using Google Gemini AI and ElevenLabs text-to-speech.=======
 
