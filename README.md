@@ -20,7 +20,7 @@ An AI-powered interview assistant that conducts voice-based technical interviews
 
 - 🔄 **Conversation Flow** - Maintains context throughout the interview- **Interactive UI**: Clean, modern React interface
 
-- **Conversation History**: Track the entire interview dialogue
+- **Conversation History**: Track the entirdinterview dialogue
 
 ## 🚀 Quick Setup
 
