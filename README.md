@@ -123,7 +123,7 @@ Frontend runs on `http://localhost:5173`ELEVENLABS_VOICE_ID=EXAVITQu4vr4xnSDxMaL
 
 ## 🎯 Usage
 
-7. Run the Flask server:
+7. Run the Flask servereefefe
 
 1. Open `http://localhost:5173````powershell
 
