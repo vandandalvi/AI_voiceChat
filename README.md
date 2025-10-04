@@ -2,7 +2,7 @@
 
 # AI Voice Chat 🎙️AI Voice Chat 🎙️  🎙️Talkito AI Interview Platform
 
-An AI-powered interview assistant that conducts voice-based technical interviews using Google Gemini AI and ElevenLabs text-to-speech.
+An AI-powered interview assistant that conducts voice-based technical interviews using Google Gemini AI and ElevenLabs text to speech.
 
 # AI Voice chat 🎙️# 🎙️ Talkito AI Interview Platform
 
@@ -22,7 +22,7 @@ An AI-powered interview assistant that conducts voice-based technical interviews
 
 
 
-## 🚀 Quick Setup## ✨ FeaturesAn AI-powered interview assistant that conducts voice-based technical interviews using Google Gemini AI and ElevenLabs text-to-speech.An AI-powered interview platform that conducts realistic technical interviews using voice interaction. Built with React, Flask, ElevenLabs TTS, Gemini AI, and FFmpeg.
+## 🚀 Quick Setup ✨ FeaturesAn AI-powered interview assistant that conducts voice-based technical interviews using Google Gemini AI and ElevenLabs text-to-speech.An AI-powered interview platform that conducts realistic technical interviews using voice interaction. Built with React, Flask, ElevenLabs TTS, Gemini AI, and FFmpeg.
 
 
 
