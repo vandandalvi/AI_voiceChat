@@ -1,127 +1,250 @@
-# 🎙️ Talkito AI Interview Platform
+# AI Voice Chat 🎙️# 🎙️ Talkito AI Interview Platform
 
-An AI-powered interview platform that conducts realistic technical interviews using voice interaction. Built with React, Flask, ElevenLabs TTS, Gemini AI, and FFmpeg.
 
-## 🌟 Features
 
-- **Voice-Based Interview**: Natural conversation with AI interviewer
-- **Real-time Speech Processing**: Uses FFmpeg for audio processing
-- **AI-Powered Responses**: Gemini 2.0 Flash for intelligent conversation
-- **Natural Voice**: ElevenLabs text-to-speech for human-like voice
-- **Interactive UI**: Clean, modern React interface
+An AI-powered interview assistant that conducts voice-based technical interviews using Google Gemini AI and ElevenLabs text-to-speech.An AI-powered interview platform that conducts realistic technical interviews using voice interaction. Built with React, Flask, ElevenLabs TTS, Gemini AI, and FFmpeg.
+
+
+
+## ✨ Features## 🌟 Features
+
+
+
+- 🎤 **Voice-to-Voice Interaction** - Speak naturally and get AI responses- **Voice-Based Interview**: Natural conversation with AI interviewer
+
+- 🤖 **AI-Powered** - Uses Google Gemini 2.0 Flash for intelligent responses  - **Real-time Speech Processing**: Uses FFmpeg for audio processing
+
+- 🗣️ **Natural Speech** - ElevenLabs API for human-like voice synthesis- **AI-Powered Responses**: Gemini 2.0 Flash for intelligent conversation
+
+- 🎯 **Technical Interviews** - Designed for web development interviews- **Natural Voice**: ElevenLabs text-to-speech for human-like voice
+
+- 🔄 **Conversation Flow** - Maintains context throughout the interview- **Interactive UI**: Clean, modern React interface
+
 - **Conversation History**: Track the entire interview dialogue
+
+## 🚀 Quick Setup
 
 ## 🏗️ Architecture
 
-```
-User speaks → FFmpeg Audio Processing → Speech-to-Text → Gemini AI → ElevenLabs TTS → AI speaks
+### 1. Clone Repository
+
+```bash```
+
+git clone https://github.com/vandandalvi/AI_voiceChat.gitUser speaks → FFmpeg Audio Processing → Speech-to-Text → Gemini AI → ElevenLabs TTS → AI speaks
+
+cd AI_voiceChat```
+
 ```
 
 ## 📋 Prerequisites
 
-- Python 3.8+
-- Node.js 16+
-- FFmpeg (included in project)
-- Gemini API Key
+### 2. Backend Setup
+
+```bash- Python 3.8+
+
+cd backend- Node.js 16+
+
+pip install -r requirements.txt- FFmpeg (included in project)
+
+```- Gemini API Key
+
 - ElevenLabs API Key
 
-## 🚀 Setup Instructions
+### 3. Configure API Keys
 
-### Backend Setup
+```bash## 🚀 Setup Instructions
 
-1. Navigate to backend directory:
-```powershell
-cd backend
+# Copy example file
+
+copy .env.example .env### Backend Setup
+
+
+
+# Edit .env and add your API keys:1. Navigate to backend directory:
+
+GEMINI_API_KEY=your_gemini_api_key_here```powershell
+
+ELEVENLABS_API_KEY=your_elevenlabs_api_key_herecd backend
+
+ELEVENLABS_VOICE_ID=nPczCjzI2devNBz1zQrb```
+
 ```
 
 2. Create a virtual environment:
-```powershell
+
+### 4. Get API Keys```powershell
+
 python -m venv venv
-```
 
-3. Activate virtual environment:
-```powershell
-.\venv\Scripts\Activate.ps1
-```
+**Gemini API (Required):**```
 
-4. Install dependencies:
-```powershell
-pip install -r requirements.txt
-```
-
-5. Create `.env` file from `.env.example`:
-```powershell
-cp .env.example .env
-```
-
-6. Edit `.env` and add your API keys:
-```
-GEMINI_API_KEY=your_gemini_api_key_here
-ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
-ELEVENLABS_VOICE_ID=EXAVITQu4vr4xnSDxMaL
-```
-
-7. Run the Flask server:
-```powershell
-python app.py
-```
-
-The backend will run on `http://localhost:5000`
-
-### Frontend Setup
-
-1. Navigate to frontend directory:
-```powershell
-cd frontend\vite-project
-```
-
-2. Install dependencies:
-```powershell
-npm install
-```
-
-3. Run the development server:
-```powershell
-npm run dev
-```
-
-The frontend will run on `http://localhost:5173`
-
-## 🔑 Getting API Keys
-
-### Gemini API Key
 1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
-2. Click "Get API Key"
-3. Create a new project or select existing
-4. Copy your API key
 
-### ElevenLabs API Key
-1. Go to [ElevenLabs](https://elevenlabs.io/)
-2. Sign up for an account
-3. Navigate to Profile Settings
-4. Copy your API key
-5. (Optional) Go to Voice Library to get custom Voice IDs
+2. Create API key and add to `.env`3. Activate virtual environment:
+
+```powershell
+
+**ElevenLabs API (Required):**.\venv\Scripts\Activate.ps1
+
+1. Sign up at [ElevenLabs](https://elevenlabs.io/)```
+
+2. Get API key from Profile → API Keys
+
+3. Browse [Voice Library](https://elevenlabs.io/voice-library) for Voice IDs4. Install dependencies:
+
+```powershell
+
+### 5. Run Backendpip install -r requirements.txt
+
+```bash```
+
+python app.py
+
+```5. Create `.env` file from `.env.example`:
+
+Backend runs on `http://localhost:5000````powershell
+
+cp .env.example .env
+
+### 6. Frontend Setup```
+
+```bash
+
+cd frontend/vite-project6. Edit `.env` and add your API keys:
+
+npm install```
+
+npm run devGEMINI_API_KEY=your_gemini_api_key_here
+
+```ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
+
+Frontend runs on `http://localhost:5173`ELEVENLABS_VOICE_ID=EXAVITQu4vr4xnSDxMaL
+
+```
 
 ## 🎯 Usage
 
-1. Start both backend and frontend servers
-2. Open browser to `http://localhost:5173`
-3. Click "Start Interview"
-4. Wait for the AI to speak the greeting
-5. Click "Start Speaking" to respond
-6. Click "Stop Speaking" when done
-7. Continue the conversation!
+7. Run the Flask server:
+
+1. Open `http://localhost:5173````powershell
+
+2. Click **"Start Interview"** python app.py
+
+3. Wait for AI greeting```
+
+4. Click **"Start Speaking"** to respond
+
+5. Click **"Stop Speaking"** when doneThe backend will run on `http://localhost:5000`
+
+6. Continue the conversation!
+
+### Frontend Setup
+
+## 🛠️ Tech Stack
+
+1. Navigate to frontend directory:
+
+- **Backend:** Flask, Python 3.13```powershell
+
+- **Frontend:** React 19, Vitecd frontend\vite-project
+
+- **AI:** Google Gemini 2.0 Flash```
+
+- **TTS:** ElevenLabs Flash v2.5 
+
+- **STT:** Google Speech Recognition2. Install dependencies:
+
+- **Audio:** FFmpeg (included)```powershell
+
+npm install
+
+## ⚙️ Configuration```
+
+
+
+### Voice Settings (in `app.py`)3. Run the development server:
+
+```python```powershell
+
+"voice_settings": {npm run dev
+
+    "stability": 0.3,        # Lower = more expressive  ```
+
+    "similarity_boost": 0.8, # Higher = closer to voice
+
+    "style": 0.3,            # Style exaggerationThe frontend will run on `http://localhost:5173`
+
+    "use_speaker_boost": True # Enhanced clarity
+
+}## 🔑 Getting API Keys
+
+```
+
+### Gemini API Key
+
+### ElevenLabs Models (in `.env`)1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
+
+- `eleven_flash_v2_5` - Fastest, lowest cost ✅2. Click "Get API Key"
+
+- `eleven_turbo_v2_5` - High quality, fast3. Create a new project or select existing
+
+- `eleven_multilingual_v2` - 44 languages4. Copy your API key
+
+
+
+## 🔧 Troubleshooting### ElevenLabs API Key
+
+1. Go to [ElevenLabs](https://elevenlabs.io/)
+
+**ElevenLabs 401 Error:** Set `USE_GTTS_FALLBACK=true` in `.env`2. Sign up for an account
+
+**No Microphone:** Grant browser permissions3. Navigate to Profile Settings
+
+**CORS Errors:** Ensure Flask-CORS is installed4. Copy your API key
+
+5. (Optional) Go to Voice Library to get custom Voice IDs
 
 ## 📁 Project Structure
 
+## 🎯 Usage
+
 ```
-talkitoP1/
+
+AI_voiceChat/1. Start both backend and frontend servers
+
+├── backend/2. Open browser to `http://localhost:5173`
+
+│   ├── app.py              # Main Flask server3. Click "Start Interview"
+
+│   ├── requirements.txt    # Dependencies4. Wait for the AI to speak the greeting
+
+│   ├── .env.example        # API keys template5. Click "Start Speaking" to respond
+
+│   └── .env                # Your API keys (git ignored)6. Click "Stop Speaking" when done
+
+├── frontend/vite-project/  # React frontend7. Continue the conversation!
+
+├── ffmpeg-8.0-essentials_build/  # Audio processing
+
+└── README.md## 📁 Project Structure
+
+```
+
+```
+
+## 📜 LicensetalkitoP1/
+
 ├── backend/
-│   ├── app.py              # Flask server with API endpoints
+
+MIT License - Free to use and modify!│   ├── app.py              # Flask server with API endpoints
+
 │   ├── requirements.txt    # Python dependencies
-│   ├── .env.example        # Environment variables template
+
+---│   ├── .env.example        # Environment variables template
+
 │   └── .gitignore         # Git ignore file
-├── frontend/
+
+**Built with ❤️ using Flask, React, Gemini AI & ElevenLabs**├── frontend/
 │   └── vite-project/
 │       ├── src/
 │       │   ├── App.jsx    # Main React component
