@@ -1,4 +1,4 @@
-# AI Voice Chat 🎙️# 🎙️ Talkito AI Interview Platform
+# AI Voice chat 🎙️# 🎙️ Talkito AI Interview Platform
 
 
 
