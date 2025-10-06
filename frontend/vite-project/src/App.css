@@ -91,6 +91,48 @@ body {
   line-height: 1.6;
 }
 
+.interview-notice {
+  background: #fef3c7;
+  border: 2px solid #f59e0b;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.interview-notice p {
+  margin-bottom: 0.5rem;
+  color: #92400e;
+  font-size: 0.95rem;
+}
+
+.interview-notice p:last-child {
+  margin-bottom: 0;
+}
+
+.interview-notice {
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1.5rem 0;
+  text-align: left;
+}
+
+.interview-notice strong {
+  color: #856404;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.interview-notice ul {
+  margin: 0.5rem 0 0 1rem;
+  color: #856404;
+}
+
+.interview-notice li {
+  margin-bottom: 0.25rem;
+}
+
 .interview-active {
   background: white;
   border-radius: 16px;
@@ -184,6 +226,16 @@ body {
 .status-message.speaking {
   border-left-color: var(--success-color);
   background: #f0fdf4;
+}
+
+.response-time {
+  margin-left: 0.5rem;
+  font-size: 0.9rem;
+  opacity: 0.8;
+  background: rgba(79, 70, 229, 0.1);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-weight: 600;
 }
 
 .speaker-icon {

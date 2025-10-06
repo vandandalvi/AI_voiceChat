@@ -10,6 +10,7 @@ function App() {
   const [isSpeaking, setIsSpeaking] = useState(false)
   const [conversationHistory, setConversationHistory] = useState([])
   const [statusMessage, setStatusMessage] = useState('')
+  const [responseTime, setResponseTime] = useState(null)
   
   const mediaRecorderRef = useRef(null)
   const audioChunksRef = useRef([])
@@ -32,9 +33,9 @@ function App() {
         setIsInterviewActive(true)
         setConversationHistory([{
           role: 'assistant',
-          text: "Hello, Myself Talkito Technician Assistant at ElevenLabs California. So tell me about your web development journey."
+          text: "Good morning. I'm Talkito, Senior Technical Recruiter at ElevenLabs. I expect detailed, specific answers with concrete examples. Let's begin - tell me about your most challenging web development project and specifically what technical obstacles you overcame."
         }])
-        setStatusMessage('Interview started! Click "Start Speaking" to respond.')
+        setStatusMessage('Interview started! Prepare for in-depth technical questions.')
       } else {
         setStatusMessage('Failed to start interview. Please check your backend.')
       }
@@ -92,6 +93,8 @@ function App() {
 
   const sendAudioToServer = async (audioBlob) => {
     try {
+      const startTime = performance.now()
+      
       const formData = new FormData()
       formData.append('audio', audioBlob, 'recording.webm')
       
@@ -102,6 +105,10 @@ function App() {
       
       if (response.ok) {
         const data = await response.json()
+        const processingTime = performance.now() - startTime
+        
+        console.log(`⏱️ Total response time: ${processingTime.toFixed(0)}ms`)
+        console.log(`🔧 Backend processing: ${data.processing_time}s`)
         
         // Add user message to history
         setConversationHistory(prev => [...prev, {
@@ -115,7 +122,8 @@ function App() {
           text: data.ai_response
         }])
         
-        // Generate and play AI speech
+        // Generate and play AI speech FASTER
+        const audioStartTime = performance.now()
         const audioResponse = await fetch(`${API_BASE_URL}/text-to-speech`, {
           method: 'POST',
           headers: {
@@ -126,10 +134,15 @@ function App() {
         
         if (audioResponse.ok) {
           const audioBlob = await audioResponse.blob()
+          const audioTime = performance.now() - audioStartTime
+          console.log(`🔊 Audio generation: ${audioTime.toFixed(0)}ms`)
+          
           await playAudio(audioBlob)
         }
         
-        setStatusMessage('Ready for your next response.')
+        const totalTime = performance.now() - startTime
+        setResponseTime((totalTime/1000).toFixed(1))
+        setStatusMessage(`⚡ Response in ${(totalTime/1000).toFixed(1)}s. Ready for next response.`)
       } else {
         setStatusMessage('Error processing audio. Please try again.')
       }
@@ -182,8 +195,8 @@ function App() {
   return (
     <div className="app">
       <header className="header">
-        <h1>🎙️ Talkito AI Interview</h1>
-        <p className="subtitle">AI-Powered Technical Interview Assistant</p>
+        <h1>🎙️ Technical Interview with Talkito</h1>
+        <p className="subtitle">Senior Technical Recruiter • ElevenLabs • Comprehensive Assessment</p>
       </header>
 
       <main className="main-content">
@@ -191,14 +204,23 @@ function App() {
           {!isInterviewActive ? (
             <div className="start-section">
               <div className="welcome-card">
-                <h2>Welcome to Your AI Interview</h2>
-                <p>Get ready to discuss your web development journey with our AI interviewer powered by ElevenLabs and Gemini AI.</p>
+                <h2>Senior Technical Interview</h2>
+                <p>You are about to interview with <strong>Talkito</strong>, Senior Technical Recruiter at ElevenLabs. This is a comprehensive technical assessment that will test your web development expertise with in-depth, challenging questions. Be prepared to provide specific examples and detailed explanations.</p>
+                <div className="interview-notice">
+                  <strong>⚠️ Interview Format:</strong>
+                  <ul>
+                    <li>In-depth technical questions</li>
+                    <li>Real-world problem scenarios</li>
+                    <li>Specific examples required</li>
+                    <li>Follow-up probing questions</li>
+                  </ul>
+                </div>
                 <button 
                   className="btn btn-primary btn-large"
                   onClick={startInterview}
                   disabled={isProcessing}
                 >
-                  {isProcessing ? 'Starting...' : 'Start Interview'}
+                  {isProcessing ? 'Connecting to Talkito...' : 'Begin Technical Interview'}
                 </button>
               </div>
             </div>
@@ -226,6 +248,9 @@ function App() {
                 <div className={`status-message ${isSpeaking ? 'speaking' : ''}`}>
                   {isSpeaking && <span className="speaker-icon">🔊</span>}
                   {statusMessage}
+                  {responseTime && (
+                    <span className="response-time">({responseTime}s)</span>
+                  )}
                 </div>
               )}
 
@@ -238,7 +263,7 @@ function App() {
                       className={`message ${message.role}`}
                     >
                       <div className="message-header">
-                        {message.role === 'assistant' ? '🤖 Talkito' : '👤 You'}
+                        {message.role === 'assistant' ? '👩‍💼 Talkito' : '👤 You'}
                       </div>
                       <div className="message-content">
                         {message.text}
@@ -253,7 +278,7 @@ function App() {
       </main>
 
       <footer className="footer">
-        <p>Powered by ElevenLabs • Gemini AI • FFmpeg</p>
+        <p>Powered by ElevenLabs • Gemini AI • Professional Interview Assessment</p>
       </footer>
     </div>
   )

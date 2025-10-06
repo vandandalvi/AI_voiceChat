@@ -1,3 +1,6 @@
+import asyncio
+import aiohttp
+import concurrent.futures
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 import os
@@ -8,6 +11,8 @@ import google.generativeai as genai
 import requests
 from dotenv import load_dotenv
 import io
+import time
+import threading
 
 # Try to import gTTS, fallback if not available
 try:
@@ -33,7 +38,7 @@ CORS(app)
 # Configuration
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 ELEVENLABS_API_KEY = os.getenv('ELEVENLABS_API_KEY')
-ELEVENLABS_VOICE_ID = os.getenv('ELEVENLABS_VOICE_ID', 'EXAVITQu4vr4xnSDxMaL')
+ELEVENLABS_VOICE_ID = os.getenv('ELEVENLABS_VOICE_ID', 'kHhWB9Fw3aF6ly7JvltC')
 USE_GTTS_FALLBACK = os.getenv('USE_GTTS_FALLBACK', 'true').lower() == 'true'
 VOICE_SPEED = float(os.getenv('VOICE_SPEED', '1.15'))
 GTTS_TLD = os.getenv('GTTS_TLD', 'com')
@@ -76,6 +81,65 @@ def find_ffmpeg_path():
 
 FFMPEG_PATH = find_ffmpeg_path()
 
+# Optimization: Thread pool for concurrent processing
+executor = concurrent.futures.ThreadPoolExecutor(max_workers=3)
+
+# Optimization: Gemini session for faster responses
+chat_session = None
+
+def initialize_gemini_chat():
+    """Initialize persistent chat session for faster responses"""
+    global chat_session
+    try:
+        # Use faster Gemini model configuration
+        generation_config = {
+            "temperature": 0.8,  # Slightly higher for more varied questions
+            "top_p": 0.85,
+            "max_output_tokens": 200,  # Allow longer, more detailed questions
+        }
+        
+        model_fast = genai.GenerativeModel(
+            'gemini-2.0-flash-exp',
+            generation_config=generation_config
+        )
+        
+        context = """You are Talkito, an advanced AI interview assistant specialized in technical assessments. 
+        You conduct RIGOROUS, IN-DEPTH interviews with high professional standards. Your interview style:
+
+        PERSONALITY:
+        - Professional and direct approach
+        - Drill down when answers lack technical depth
+        - Ask challenging follow-up questions that test real understanding
+        - Challenge candidates respectfully but firmly with scenario-based questions
+        - Focus on technical depth, problem-solving methodology, and practical experience
+
+        QUESTION TYPES:
+        - Start with experience, then dive deep into technical specifics
+        - Ask "How would you handle..." complex scenarios
+        - Request concrete examples: "Tell me about a specific time when..."
+        - Challenge with "What if..." hypothetical situations
+        - Test edge cases and error handling knowledge
+        - Probe architecture and scalability decisions
+
+        RESPONSE STYLE:
+        - Keep responses to 2-3 sentences max
+        - Always ask ONE specific, challenging follow-up question
+        - Don't accept vague answers - dig deeper
+        - Use phrases like: "Can you be more specific?", "Walk me through...", "How exactly did you..."
+        
+        Remember: You're evaluating for a senior technical role. Set high standards."""
+        
+        chat_session = model_fast.start_chat(history=[
+            {"role": "user", "parts": [context]},
+            {"role": "model", "parts": ["Understood. I'm Talkito, and I'll conduct a rigorous technical interview with high standards. I'll ask in-depth questions and expect detailed, specific answers. Ready to begin the evaluation."]}
+        ])
+        print("✓ Strict interviewer chat session initialized")
+    except Exception as e:
+        print(f"⚠️ Could not initialize Gemini chat: {e}")
+
+# Initialize chat session on startup
+initialize_gemini_chat()
+
 @app.route('/api/health', methods=['GET'])
 def health_check():
     return jsonify({'status': 'ok', 'message': 'Server is running'})
@@ -86,7 +150,7 @@ def start_interview():
     global conversation_history
     conversation_history = []
     
-    greeting = "Hello, Myself Talkito Technician Assistant at ElevenLabs California. So tell me about your web development journey."
+    greeting = "Hello! I'm Talkito, your AI interview assistant. I'll be conducting a comprehensive technical assessment today to evaluate your skills thoroughly. Let's dive deep into your experience - tell me about your most challenging project and walk me through the specific technical decisions you made and why you chose those approaches."
     
     # Add to conversation history
     conversation_history.append({
@@ -108,7 +172,8 @@ def start_interview():
 
 @app.route('/api/process-audio', methods=['POST'])
 def process_audio():
-    """Process user audio: speech-to-text -> Gemini -> text-to-speech"""
+    """OPTIMIZED: Process user audio with parallel processing"""
+    start_time = time.time()
     
     if 'audio' not in request.files:
         return jsonify({'error': 'No audio file provided'}), 400
@@ -121,20 +186,25 @@ def process_audio():
         temp_audio_path = temp_audio.name
     
     try:
-        # Convert audio to text
-        user_text = speech_to_text(temp_audio_path)
+        print(f"🔄 Starting audio processing...")
+        
+        # OPTIMIZATION 1: Fast audio conversion (optimized FFmpeg settings)
+        user_text = speech_to_text_fast(temp_audio_path)
+        print(f"⏱️ STT completed in {time.time() - start_time:.2f}s")
         
         if not user_text:
             return jsonify({'error': 'Failed to transcribe audio'}), 500
         
         # Add user message to conversation history
         conversation_history.append({
-            'role': 'user',
+            'role': 'user', 
             'content': user_text
         })
         
-        # Get AI response from Gemini
-        ai_response = get_gemini_response(user_text)
+        # OPTIMIZATION 2: Fast AI response with chat session
+        ai_start = time.time()
+        ai_response = get_gemini_response_fast(user_text)
+        print(f"⏱️ AI response in {time.time() - ai_start:.2f}s")
         
         if not ai_response:
             return jsonify({'error': 'Failed to get AI response'}), 500
@@ -145,17 +215,20 @@ def process_audio():
             'content': ai_response
         })
         
-        # Convert AI response to speech
-        audio_data = text_to_speech(ai_response)
+        # OPTIMIZATION 3: Start TTS in background while returning response
+        def generate_audio_async():
+            return text_to_speech_fast(ai_response)
         
-        if audio_data:
-            return jsonify({
-                'user_text': user_text,
-                'ai_response': ai_response,
-                'audio_url': '/api/get-latest-audio'
-            })
-        else:
-            return jsonify({'error': 'Failed to generate speech'}), 500
+        # Submit TTS task to thread pool
+        future = executor.submit(generate_audio_async)
+        
+        print(f"🚀 Total processing time: {time.time() - start_time:.2f}s")
+        
+        return jsonify({
+            'user_text': user_text,
+            'ai_response': ai_response,
+            'processing_time': round(time.time() - start_time, 2)
+        })
             
     finally:
         # Cleanup
@@ -171,7 +244,7 @@ def text_to_speech_endpoint():
     if not text:
         return jsonify({'error': 'No text provided'}), 400
     
-    audio_data = text_to_speech(text)
+    audio_data = text_to_speech_fast(text)
     
     if audio_data:
         return send_file(
@@ -182,7 +255,211 @@ def text_to_speech_endpoint():
     else:
         return jsonify({'error': 'Failed to generate speech'}), 500
 
-def speech_to_text(audio_path):
+@app.route('/api/get-latest-audio', methods=['GET'])
+def get_latest_audio():
+    """Get the latest generated audio (for compatibility)"""
+    # This endpoint is for backward compatibility
+    # The frontend should use the direct audio from text-to-speech
+    return jsonify({'message': 'Use /api/text-to-speech endpoint instead'})
+
+def speech_to_text_fast(audio_path):
+    """OPTIMIZED: Convert audio to text with faster FFmpeg settings"""
+    # Convert to WAV format using optimized FFmpeg settings
+    output_path = audio_path.replace('.webm', '.wav')
+    
+    try:
+        # OPTIMIZATION: Faster FFmpeg conversion with reduced quality for speed
+        subprocess.run([
+            FFMPEG_PATH,
+            '-i', audio_path,
+            '-acodec', 'pcm_s16le',
+            '-ar', '16000',  # Lower sample rate for faster processing
+            '-ac', '1',
+            '-compression_level', '1',  # Fast compression
+            output_path,
+            '-y'
+        ], check=True, capture_output=True, timeout=3)  # 3 second timeout
+        
+        # Use Google Speech Recognition (free)
+        if SR_AVAILABLE:
+            try:
+                recognizer = sr.Recognizer()
+                recognizer.energy_threshold = 300  # Faster voice detection
+                recognizer.dynamic_energy_threshold = False
+                
+                with sr.AudioFile(output_path) as source:
+                    # OPTIMIZATION: Shorter audio duration for faster processing
+                    audio_data = recognizer.record(source, duration=10)  # Max 10 seconds
+                    text = recognizer.recognize_google(audio_data, language='en-US')
+                    print(f"✓ Fast transcription: {text}")
+                    return text
+            except sr.UnknownValueError:
+                return "[Could not understand audio - please speak clearly]"
+            except sr.RequestError as e:
+                print(f"⚠️ Speech recognition error: {e}")
+                return "[Speech recognition service error]"
+            except Exception as e:
+                print(f"⚠️ Fast transcription error: {e}")
+                return "[Transcription failed]"
+        else:
+            return "[SpeechRecognition not available]"
+        
+    except subprocess.TimeoutExpired:
+        print("⚠️ FFmpeg timeout - audio too long")
+        return "[Audio too long - please keep responses under 30 seconds]"
+    except subprocess.CalledProcessError as e:
+        print(f"FFmpeg error: {e}")
+        return None
+    finally:
+        if os.path.exists(output_path):
+            os.unlink(output_path)
+
+def get_gemini_response_fast(user_message):
+    """OPTIMIZED: Get response from Gemini AI using persistent chat session"""
+    global chat_session
+    
+    try:
+        if chat_session:
+            # Add context for strict interviewing based on conversation stage
+            conversation_length = len(conversation_history)
+            
+            # Add coaching prompts based on interview progression
+            enhanced_message = user_message
+            
+            if conversation_length <= 4:  # Early stage - establish competency
+                enhanced_message += "\n\n[INTERVIEWER NOTE: This is early stage. Probe for technical depth and ask for specific examples. Challenge surface-level answers.]"
+            elif conversation_length <= 8:  # Mid stage - dive deep into problem-solving
+                enhanced_message += "\n\n[INTERVIEWER NOTE: Mid-stage interview. Ask challenging 'what-if' scenarios. Test edge cases and system design thinking.]"
+            else:  # Late stage - cultural fit and advanced topics
+                enhanced_message += "\n\n[INTERVIEWER NOTE: Advanced stage. Ask about leadership, mentoring, or complex architectural decisions. Be more demanding.]"
+            
+            # Use existing chat session for faster responses
+            response = chat_session.send_message(enhanced_message)
+            result = response.text.strip()
+            
+            # Ensure response maintains strict interviewer tone
+            if len(result) > 350:
+                result = result[:350] + "..."
+            
+            print(f"✓ Strict interviewer response: {result[:50]}...")
+            return result
+        else:
+            # Fallback to original method
+            return get_gemini_response(user_message)
+            
+    except Exception as e:
+        print(f"Fast Gemini error: {e}")
+        # Fallback to original method
+        return get_gemini_response(user_message)
+
+def text_to_speech_fast(text):
+    """OPTIMIZED: Convert text to speech with optimizations for speed"""
+    
+    # OPTIMIZATION: Limit text length for faster TTS
+    if len(text) > 200:
+        text = text[:200] + "..."
+    
+    # Try ElevenLabs first with optimized settings
+    if not USE_GTTS_FALLBACK and ELEVENLABS_API_KEY:
+        try:
+            url = f"https://api.elevenlabs.io/v1/text-to-speech/{ELEVENLABS_VOICE_ID}"
+            
+            headers = {
+                "Accept": "audio/mpeg",
+                "Content-Type": "application/json",
+                "xi-api-key": ELEVENLABS_API_KEY
+            }
+            
+            # OPTIMIZED: Faster ElevenLabs settings
+            data = {
+                "text": text,
+                "model_id": "eleven_turbo_v2",  # Fastest model
+                "voice_settings": {
+                    "stability": 0.4,           # Slightly higher for speed
+                    "similarity_boost": 0.6,    # Lower for faster processing
+                    "style": 0.2,               # Reduced style for speed
+                    "use_speaker_boost": False  # Disable for speed
+                },
+                "optimize_streaming_latency": 4  # Maximum optimization
+            }
+            
+            # OPTIMIZATION: Shorter timeout for faster failure detection
+            response = requests.post(url, json=data, headers=headers, timeout=5)
+            
+            if response.status_code == 200:
+                print(f"✓ Fast ElevenLabs TTS completed")
+                return response.content
+            else:
+                print(f"⚠️ ElevenLabs error: {response.status_code} - falling back to gTTS")
+        except Exception as e:
+            print(f"⚠️ Fast ElevenLabs error: {e} - falling back to gTTS")
+    
+    # OPTIMIZED gTTS fallback
+    if GTTS_AVAILABLE:
+        try:
+            # OPTIMIZATION: Shorter text and minimal settings for speed
+            tts = gTTS(text=text, lang='en', slow=False, tld='com')
+            
+            # Save to bytes buffer
+            audio_buffer = io.BytesIO()
+            tts.write_to_fp(audio_buffer)
+            audio_buffer.seek(0)
+            
+            audio_data = audio_buffer.read()
+            
+            # OPTIMIZATION: Skip speed adjustment for faster response
+            # If speed adjustment is needed, use simpler processing
+            if VOICE_SPEED != 1.0:
+                try:
+                    audio_data = speed_up_audio_fast(audio_data, speed=VOICE_SPEED)
+                except Exception as e:
+                    print(f"⚠️ Skipping speed adjustment for faster response: {e}")
+            
+            print(f"✓ Fast gTTS completed")
+            return audio_data
+            
+        except Exception as e:
+            print(f"❌ Fast gTTS error: {e}")
+            return None
+    else:
+        print("❌ No TTS service available")
+        return None
+
+def speed_up_audio_fast(audio_data, speed=1.15):
+    """OPTIMIZED: Speed up audio with minimal processing"""
+    try:
+        # Save input audio to temp file
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.mp3') as temp_input:
+            temp_input.write(audio_data)
+            temp_input_path = temp_input.name
+        
+        # Create output temp file
+        temp_output_path = temp_input_path.replace('.mp3', '_fast.mp3')
+        
+        # OPTIMIZATION: Faster FFmpeg processing with reduced quality
+        subprocess.run([
+            FFMPEG_PATH,
+            '-i', temp_input_path,
+            '-filter:a', f'atempo={speed}',
+            '-b:a', '64k',  # Lower bitrate for speed
+            '-vn',
+            temp_output_path,
+            '-y'
+        ], check=True, stderr=subprocess.DEVNULL, timeout=2)  # 2 second timeout
+        
+        # Read the sped-up audio
+        with open(temp_output_path, 'rb') as f:
+            fast_audio = f.read()
+        
+        # Cleanup
+        os.unlink(temp_input_path)
+        os.unlink(temp_output_path)
+        
+        return fast_audio
+        
+    except Exception as e:
+        print(f"Fast speed adjustment failed: {e}")
+        return audio_data  # Return original if speed adjustment fails
     """Convert audio to text using Google Speech Recognition (free)"""
     # Convert to WAV format using FFmpeg
     output_path = audio_path.replace('.webm', '.wav')
@@ -229,21 +506,28 @@ def speech_to_text(audio_path):
             os.unlink(output_path)
 
 def get_gemini_response(user_message):
-    """Get response from Gemini AI"""
+    """Get response from Gemini AI (fallback method)"""
     try:
-        # Create context for the interview
-        context = """You are Talkito, a friendly technical assistant at ElevenLabs California. 
-        You are conducting a technical interview focused on web development. 
-        Ask relevant follow-up questions, provide encouragement, and maintain a professional yet warm tone.
-        Keep responses concise and conversational (2-3 sentences max)."""
+        # Create context for strict interviewing
+        context = """You are Talkito, a senior technical recruiter at ElevenLabs with 8+ years of experience. 
+        You conduct STRICT, PROFESSIONAL interviews with high standards. 
         
-        # Build conversation context
-        full_prompt = f"{context}\n\nConversation history:\n"
+        INTERVIEW STYLE:
+        - Ask in-depth, challenging questions that test real understanding
+        - Don't accept vague answers - always probe deeper
+        - Use follow-ups like: "Can you be more specific?", "Walk me through the exact implementation", "What challenges did you face?"
+        - Challenge the candidate respectfully but firmly
+        - Focus on technical depth, problem-solving, and real-world scenarios
+        
+        Keep responses professional but demanding. Always end with ONE specific, challenging follow-up question."""
+        
+        # Build conversation context with stricter tone
+        full_prompt = f"{context}\n\nInterview Conversation:\n"
         for msg in conversation_history[-6:]:  # Last 3 exchanges
-            role = "Interviewer" if msg['role'] == 'assistant' else "Candidate"
+            role = "Talkito (Interviewer)" if msg['role'] == 'assistant' else "Candidate"
             full_prompt += f"{role}: {msg['content']}\n"
         
-        full_prompt += f"\nCandidate: {user_message}\nInterviewer:"
+        full_prompt += f"\nCandidate: {user_message}\nTalkito (Interviewer):"
         
         # Generate response
         response = model.generate_content(full_prompt)
